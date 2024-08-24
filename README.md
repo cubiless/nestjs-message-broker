@@ -119,7 +119,7 @@ Require only static to two exchanges
 
 ### Queues
 
-For each `@OnMessagesEvent('user.*')` create own queue `${name}/$namespace}/${class-key}/${methode-key}` and bind to
+For each `@OnMessagesEvent('user.*')` create own queue `${name}/${namespace}/${class-key}/${methode-key}` and bind to
 the messages exchange with the following rules `${queue}` or `-.${scope}.${event}`.
 
 1. Global Scope `-.global.${event}`
@@ -135,7 +135,7 @@ the messages exchange with the following rules `${queue}` or `-.${scope}.${event
 ##### Params
 
 - `route` Route of event
-- `payload` Options of this queue
+- `payload` Event payload
 - `options` Optional Options
 
 ##### Example
