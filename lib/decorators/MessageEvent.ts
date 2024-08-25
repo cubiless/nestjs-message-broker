@@ -22,7 +22,5 @@ export const MessageEvent = (
       ],
       constructor,
     );
-
-    console.log('Init', constructor);
   };
 };

@@ -79,8 +79,6 @@ export abstract class MessageBroker<BrokerOption> {
       }
     }
 
-    console.log(metadata.options.exact);
-
     // Add children rules
     if (!metadata.options.exact) {
       eventPattern.push(
