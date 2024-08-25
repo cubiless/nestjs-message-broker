@@ -1,24 +1,17 @@
-import { IMessageEvent } from '../../interfaces';
+import { OnMessageEventOptions } from '../../interfaces';
 import { Injectable } from '@nestjs/common';
-import { OnMessageEventMetadata } from '../../decorators';
 import * as amqpConnectionManager from 'amqp-connection-manager';
 import { ChannelWrapper } from 'amqp-connection-manager';
 import { IAmqpConnectionManager } from 'amqp-connection-manager/dist/types/AmqpConnectionManager';
 import type * as amqplib from 'amqplib';
 import { MessageBroker } from './MessageBroker.service';
 import { MessageBrokerEmitOption } from '../../interfaces/MessageBrokerEmitOption.interface';
-import { NameUtils } from '../../utils/Name.utils';
 
 export interface RabbitMQBrokerOptions {
   user: string;
   password: string;
   host: string;
   port: number;
-
-  /**
-   * Exchange and queue name of the project
-   */
-  prefix: string;
 
   /**
    * Default prefetch of a queue
@@ -37,7 +30,7 @@ export class RabbitMQBroker extends MessageBroker<RabbitMQBrokerOptions> {
   private retriesQueue: amqplib.Replies.AssertQueue | null = null;
 
   get amqpUrl() {
-    const { user, password, host, port } = super.brokerOption;
+    const { user, password, host, port } = this.options.broker;
     return `amqp://${user}:${password}@${host}:${port}`;
   }
 
@@ -73,7 +66,7 @@ export class RabbitMQBroker extends MessageBroker<RabbitMQBrokerOptions> {
 
   private async initMessageExchange() {
     this.messageExchange = await this.chancel.assertExchange(
-      this.getPrefixName('messages'),
+      this.buildNameTag('messages'),
       'x-delayed-message',
       {
         durable: true,
@@ -86,7 +79,7 @@ export class RabbitMQBroker extends MessageBroker<RabbitMQBrokerOptions> {
 
   private async initRetriesExchange() {
     this.retriesExchange = await this.chancel.assertExchange(
-      this.getPrefixName('retries'),
+      this.buildNameTag('retries'),
       'fanout',
       {
         durable: true,
@@ -96,16 +89,18 @@ export class RabbitMQBroker extends MessageBroker<RabbitMQBrokerOptions> {
 
   private async initRetriesQueue() {
     this.retriesQueue = await this.chancel.assertQueue(
-      this.getPrefixName('retries'),
+      this.buildNameTag('retries'),
       {
         durable: true,
       },
     );
+
     await this.chancel.bindQueue(
       this.retriesQueue.queue,
       this.retriesExchange.exchange,
-      '*',
+      this.options.multiLevelWildcards,
     );
+
     await this.chancel.consume(
       this.retriesQueue.queue,
       async (msg: amqplib.ConsumeMessage) => {
@@ -121,7 +116,7 @@ export class RabbitMQBroker extends MessageBroker<RabbitMQBrokerOptions> {
             {
               priority: msg.properties.priority,
               headers: {
-                'x-delay': this.options.retryStrategy(retries),
+                'x-delay': this.calculateRetryDelay(retries),
                 'x-retries': retries + 1,
               },
             },
@@ -138,88 +133,64 @@ export class RabbitMQBroker extends MessageBroker<RabbitMQBrokerOptions> {
     );
   }
 
-  async addListener(
-    metadata: OnMessageEventMetadata,
-    onMessages: (
-      event: IMessageEvent,
-      metadata: OnMessageEventMetadata,
-      retires: number,
-    ) => Promise<void>,
+  protected async initListener(
+    nameTag: string,
+    eventPattern: Array<string>,
+    options: OnMessageEventOptions,
+    onMessage: (buffer: Buffer, retry: number) => Promise<void>,
   ): Promise<void> {
-    for (const event of metadata.events) {
-      const scope = metadata.options.scope ?? [];
-      const scopes = Array.isArray(scope) ? (scope ?? []) : [scope];
-      scopes.push(this.options.defaultScope);
+    const queue = await this.chancel.assertQueue(nameTag, {
+      durable: true,
+      deadLetterExchange: this.retriesExchange.exchange,
+      deadLetterRoutingKey: this.buildRabbitmqRoutingKey('retry', nameTag),
+    });
 
-      const formatEvent = NameUtils.toKebabCase(event);
-      const formatQueue = NameUtils.toKebabCase(
-        `${this.options.namespace}/${metadata.options.queue}`,
-      );
-      const formatScopes = scopes.map(NameUtils.toKebabCase);
+    // Bind for retry routing
+    await this.chancel.bindQueue(
+      queue.queue,
+      this.messageExchange.exchange,
+      this.buildRabbitmqRoutingKey('retry', nameTag),
+    );
 
-      const queue = await this.chancel.assertQueue(
-        this.getPrefixName(formatQueue),
-        {
-          durable: true,
-          deadLetterExchange: this.retriesExchange.exchange,
-          deadLetterRoutingKey: this.buildRoutingKey(formatQueue),
-        },
-      );
-
-      // Bind fo
+    // Bind to normal routing
+    for (const event of eventPattern) {
       await this.chancel.bindQueue(
         queue.queue,
         this.messageExchange.exchange,
-        this.buildRoutingKey(formatQueue),
-      );
-
-      // Bind queues
-      for (const scope of formatScopes) {
-        await this.chancel.bindQueue(
-          queue.queue,
-          this.messageExchange.exchange,
-          this.buildRoutingKey(null, scope, formatEvent),
-        );
-      }
-
-      await this.chancel.consume(
-        queue.queue,
-        async (msg: amqplib.ConsumeMessage) => {
-          try {
-            await onMessages(
-              this.options.serializer.deserializer(msg.content),
-              metadata,
-              msg.properties?.headers['x-retries'] || 0,
-            );
-            this.chancel.ack(msg);
-          } catch (e) {
-            this.chancel.nack(msg, false, false);
-          }
-        },
-        {
-          prefetch:
-            metadata.options.prefetch ?? this.brokerOption.prefetch ?? 1,
-          priority: metadata.options.priority ?? undefined,
-        },
+        this.buildRabbitmqRoutingKey('default', event),
       );
     }
+
+    // Add consumer
+    await this.chancel.consume(
+      queue.queue,
+      async (msg: amqplib.ConsumeMessage) => {
+        try {
+          await onMessage(
+            msg.content,
+            msg.properties?.headers['x-retries'] || 0,
+          );
+          this.chancel.ack(msg);
+        } catch (e) {
+          this.chancel.nack(msg, false, false);
+        }
+      },
+      {
+        prefetch: options.prefetch ?? this.options.broker.prefetch ?? 1,
+        priority: options.priority ?? undefined,
+      },
+    );
   }
 
-  async removeAllListener(): Promise<void> {}
-
-  async emit(
+  async emitMessageEvent(
     route: string,
-    payload: IMessageEvent,
-    options: MessageBrokerEmitOption = {},
+    buffer: Buffer,
+    options?: MessageBrokerEmitOption,
   ): Promise<boolean> {
     return this.chancel.publish(
       this.messageExchange.exchange,
-      this.buildRoutingKey(
-        null,
-        NameUtils.toKebabCase(options.scope ?? this.options.defaultScope),
-        NameUtils.toKebabCase(route),
-      ),
-      this.options.serializer.serializer(payload),
+      this.buildRabbitmqRoutingKey('default', route),
+      buffer,
       {
         priority: options.priority || 0,
         headers: {
@@ -230,11 +201,10 @@ export class RabbitMQBroker extends MessageBroker<RabbitMQBrokerOptions> {
     );
   }
 
-  private buildRoutingKey(...names: (string | null)[]) {
-    return names.map((v) => v ?? '-').join('.');
-  }
-
-  private getPrefixName(...names: (string | null)[]): string {
-    return [super.brokerOption.prefix, ...names].filter((v) => !!v).join('/');
+  private buildRabbitmqRoutingKey(
+    type: 'default' | 'retry',
+    pattern: string,
+  ): string {
+    return `${type}${this.options.delimiter}${pattern}`;
   }
 }

@@ -1,5 +1,7 @@
 import { InjectMessageBroker, OnMessageEvent, RabbitMQBroker } from '../../lib';
 import { Injectable } from '@nestjs/common';
+import { UserCreatedEvent } from './User.created.event';
+import { UserEvent } from './User.event';
 
 @Injectable()
 export class AppService {
@@ -8,25 +10,28 @@ export class AppService {
     private readonly messageBroker: RabbitMQBroker,
   ) {}
 
-  @OnMessageEvent('user.#', { scope: 'user' })
-  async handleAllUser() {}
-
-  @OnMessageEvent('user.created', { scope: 'user' })
-  async handleCreatedUser(payload: any, _, retries: number) {
-    if (Math.random() > 0.8) throw new Error(`Retry: ${retries}`);
-    setTimeout(() => {
-      this.emitCreateUser(payload);
-    }, 100);
+  @OnMessageEvent(UserEvent)
+  async handleAllUser(payload: UserEvent) {
+    console.log('handleAllUser', payload);
   }
 
-  @OnMessageEvent('#', { scope: 'user' })
-  async handleAllInUseScope() {}
+  @OnMessageEvent(UserCreatedEvent)
+  async handleCreatedUser(payload: UserCreatedEvent, _, retries: number) {
+    if (Math.random() > 0.8) throw new Error(`Retry: ${retries}`);
+    await this.emitByEvent(payload);
+  }
 
-  async emitCreateUser(user: any) {
+  async emitByPayload(user: any) {
     return this.messageBroker.emit('user.created', user, {
       priority: 10,
-      scope: 'user',
-      delay: 60 * 1000,
+      delay: 10000,
+    });
+  }
+
+  async emitByEvent(createdEvent: UserCreatedEvent) {
+    return this.messageBroker.emit(createdEvent, {
+      priority: 10,
+      delay: 10000,
     });
   }
 }

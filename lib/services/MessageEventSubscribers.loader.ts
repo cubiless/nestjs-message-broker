@@ -9,7 +9,7 @@ import { InstanceWrapper } from '@nestjs/core/injector/instance-wrapper';
 import { MessageEventMetadataAccessor } from './MessageEventMetadata.accessor';
 import { InjectMessageBroker, OnMessageEventMetadata } from '../decorators';
 import { MessageBroker } from './brokers/MessageBroker.service';
-import { IMessageEvent } from '../interfaces';
+import { IMessageEvent, OnMessageEventOptions } from '../interfaces';
 
 @Injectable()
 export class MessageEventSubscribersLoader
@@ -31,7 +31,6 @@ export class MessageEventSubscribersLoader
   }
 
   async onApplicationShutdown() {
-    await this.messageBroker.removeAllListener();
     await this.messageBroker.disconnect();
   }
 
@@ -66,28 +65,30 @@ export class MessageEventSubscribersLoader
 
     if (!messageMetadatas) return;
 
-    const defaultQueueName = `${name}/${methodKey}`;
-
     for (const messageMetadata of messageMetadatas) {
       // Set default queue name
       if (!messageMetadata.options?.queue) {
-        messageMetadata.options.queue = defaultQueueName;
+        messageMetadata.options.queue = [name, methodKey];
+      }
+
+      if (!messageMetadata.options?.exact) {
+        messageMetadata.options.exact = true;
       }
 
       try {
-        await this.messageBroker.addListener(
+        await this.messageBroker.bind(
           messageMetadata,
           async (
             event: IMessageEvent,
-            metadata: OnMessageEventMetadata,
-            retires: number,
+            options: OnMessageEventOptions,
+            retry: number,
           ) => {
             try {
               return await instance[methodKey].call(
                 instance,
                 event,
-                metadata,
-                retires,
+                options,
+                retry,
               );
             } catch (e) {
               if (messageMetadata?.options?.suppressErrors ?? true) {
@@ -96,10 +97,6 @@ export class MessageEventSubscribersLoader
               throw e;
             }
           },
-        );
-
-        this.logger.log(
-          `${messageMetadata.options.queue}(${messageMetadata.events.join('|')}) initialized`,
         );
       } catch (e) {
         this.logger.error(

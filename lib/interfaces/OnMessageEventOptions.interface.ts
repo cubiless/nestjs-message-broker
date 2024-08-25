@@ -4,7 +4,7 @@ export interface OnMessageEventOptions {
    *
    * Default ${class-name}/${methode-key}
    */
-  queue?: string;
+  queue?: string | Array<string>;
 
   /**
    * Print the errors int the console
@@ -34,4 +34,11 @@ export interface OnMessageEventOptions {
    * Default []
    */
   scope?: string | Array<string>;
+
+  /**
+   * Listen only to this event routing key and not children
+   *
+   * Default true
+   */
+  exact?: boolean;
 }

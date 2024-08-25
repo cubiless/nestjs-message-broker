@@ -41,4 +41,37 @@ export interface MessageBrokerOptions<T> {
    * Namespace of queue and exchanges
    */
   namespace?: string | null;
+
+  /**
+   * Name of a project
+   */
+  name: string;
+
+  /**
+   * the delimiter used to segment namespaces
+   *
+   * Default .
+   */
+  delimiter?: string;
+
+  /**
+   * the delimiter used to segment namespaces
+   *
+   * Default .
+   */
+  nameDelimiter?: string;
+
+  /**
+   *  Wildcard for the next sub event
+   *
+   * Default **
+   */
+  wildcards?: string;
+
+  /**
+   *  Wildcard for each sub event
+   *
+   * Default **
+   */
+  multiLevelWildcards?: string;
 }

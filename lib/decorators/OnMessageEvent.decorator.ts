@@ -1,14 +1,15 @@
 import { extendArrayMetadata } from '@nestjs/common/utils/extend-metadata.util';
 import { MESSAGE_EVENT_LISTENER_METADATA } from '../Constants';
-import { OnMessageEventOptions } from '../interfaces';
+import { IMessageEvent, OnMessageEventOptions } from '../interfaces';
+import { Type } from '@nestjs/common';
 
 export interface OnMessageEventMetadata {
-  events: Array<string>;
+  events: Array<string | Type<IMessageEvent>>;
   options: OnMessageEventOptions;
 }
 
 export const OnMessageEvent = (
-  event: string | Array<string>,
+  event: string | Array<string> | Type<IMessageEvent>,
   options: OnMessageEventOptions = {},
 ): MethodDecorator => {
   const decoratorFactory = (target: object, key?: any, descriptor?: any) => {
