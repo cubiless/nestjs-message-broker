@@ -8,9 +8,10 @@
 $ npm i @cubiles/nestjs-message-broker
 ```
 
-| Support | Message-Broker | Docker-Image                                |
-|---------|----------------|---------------------------------------------|
-| ✅       | RabbitMQ       | `heidiks/rabbitmq-delayed-message-exchange` |
+| Support       | Message-Broker | Docker-Image                                |
+|---------------|----------------|---------------------------------------------|
+| ✅ Supported   | RabbitMQ       | `heidiks/rabbitmq-delayed-message-exchange` |
+| ✴️ In Process | EventEmitter2  |                                             |
 
 ## Features
 
@@ -32,15 +33,35 @@ $ npm i @cubiles/nestjs-message-broker
         user: 'guest',
         host: 'localhost',
         port: 5672,
-        prefix: 'my-broker',
       },
+      name: 'my-broker',
       namespace: 'user-service',
+      delimiter: '.',
+      wildcards: '*',
+      multiLevelWildcards: '#',
     }),
   ],
   providers: [AppService],
   exports: [AppService],
 })
 export class AppModule {
+}
+```
+
+```ts
+@MessageEvent('user')
+export class UserEvent implements IMessageEvent {
+  userId: string;
+
+  constructor(userId: string) {
+    this.userId = userId;
+  }
+}
+```
+
+```ts
+@MessageEvent('created')
+export class UserCreatedEvent extends UserEvent {
 }
 ```
 
@@ -53,18 +74,18 @@ export class AppService {
   ) {
   }
 
+  @OnMessageEvent(UserEvent, { exact: false })
+  async handleUser(user) {
+    console.log('On user', user);
+  }
+
   @OnMessageEvent('user.created')
   async handleCreatedUser(user) {
     console.log('New user', user);
   }
 
-  @OnMessageEvent('user.*')
-  async handleUser(user) {
-    console.log('On user', user);
-  }
-
   async sendMessages() {
-    await this.messageBroker.emit('user.created', { name: 'peter' });
+    await this.messageBroker.emit(new UserCreatedEvent('1024'));
   }
 }
 ```
@@ -73,28 +94,28 @@ export class AppService {
 
 #### Exchanges
 
-- `my-broker/messages`
-- `my-broker/retries`
+- `my-broker.user-services.messages`
+- `my-broker.user-services.retries`
 
 #### Queues
 
-- `my-broker/retries`
-- `my-broker/user-services/app-service/handle-created-user`
-- `my-broker/user-services/app-service/handle-user`
+- `my-broker.user-services.retries`
+- `my-broker.user-services.app-service.handle-created-user`
+- `my-broker.user-services.app-service.handle-user`
 
 ### Flow-Chart
 
-1. Publish in `my-broker/messages`
+1. Publish in `my-broker.messages`
 2. Route to
-    1. `my-broker/user-services/app-service/handle-created-user`
-    2. `my-broker/user-services/app-service/handle-user`
+    1. `my-broker.user-services.app-service.handle-created-user`
+    2. `my-broker.user-services.app-service.handle-user`
 3. Process message
 
 ### What happens if the processing fails
 
-1. Reroute to `my-broker/retries`
+1. Reroute to `my-broker.user-services.retries`
 2. Calculate the delay of the next try
-3. Publish again in `my-broker/messages` and wait the delay
+3. Publish again in `my-broker.user-services.messages` and wait the delay
 4. Route **only** to the subscriber of failed process
 
 ## Retry-Strategy
@@ -106,96 +127,9 @@ export class AppService {
 | `cube`     | `pitch=1s` `min=0.5s` `max=6h` `base=3` | `0.5s` | `1.5s` | `4.5s`  | `~13s`  | `~40s`  | `~2min` | `~6min` | `~18min` | `~54min` | `~2.75h` | `6h`   |        
 | `steps`    | `steps=[...]`                           | `1s`   | `5s`   | `30s`   | `3min`  | `10min` | `1h`    | `6h`    | `6h`     | `6h`     | `6h`     | `6h`   | 
 
-## Auto-Build of exchanges and queues
-
-This module extract out the code the require exchanges, queues and bindings.
-
-### Exchanges
-
-Require only static to two exchanges
-
-1. `${name}/messages` All Message put in this exchange
-2. `${name}/retries` If messages fail to put in these exchanges for next consuming
-
-### Queues
-
-For each `@OnMessagesEvent('user.*')` create own queue `${name}/${namespace}/${class-key}/${methode-key}` and bind to
-the messages exchange with the following rules `${queue}` or `-.${scope}.${event}`.
-
-1. Global Scope `-.global.${event}`
-2. Retry route `${queue}`
-3. For each custom Scope `-.${scope}.${event}`
-
 ## Api
 
-### Methods
-
-#### `MessagesBroker.emit(route: string, payload: IMessageEvent, options?: MessageBrokerEmitOption): Promise<boolean>`
-
-##### Params
-
-- `route` Route of event
-- `payload` Event payload
-- `options` Optional Options
-
-##### Example
-
-```ts
-this.messageBroker.emit('user.created', { userId: '1' });
-
-this.messageBroker.emit('user.created', { userId: '1' }, {
-  priority: 10,
-  scope: 'user',
-  delay: 60 * 1000,
-});
-```
-
-### Decorators
-
-#### `@InjectMessageBroker()`
-
-This is the short of `@Inject(MESSAGE_BROKER)` for the getting of the MessagesBroker.
-
-##### Example
-
-```ts
-import { Injectable } from '@nestjs/common';
-
-@Injectable()
-class AppServices {
-
-  constructor(
-    @InjectMessageBroker()
-    private readonly messageBroker: RabbitMQBroker,
-  ) {
-  }
-}
-```
-
-#### `@OnEventMessages(event:string,options?:OnEventMessageOptions)`
-
-##### Params
-
-- `event` Pattern of message route
-    - `*` can substitute for exactly one word.
-    - `#` can substitute for zero or more words
-    - `split.with.dot` can group events
-- `options` Options of this queue
-
-##### Example
-
-```ts
-import { Injectable } from '@nestjs/common';
-
-@Injectable()
-class AppServices {
-
-  @OnEventMessages('your.route')
-  async onHandle(payload: any, options: OnEventMessageOptions, retries: number) {
-    // Your code
-  }
-}
-```
+> Coming soon
 
 ### Types
 

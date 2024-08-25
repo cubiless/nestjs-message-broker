@@ -10,7 +10,7 @@ export class AppService {
     private readonly messageBroker: RabbitMQBroker,
   ) {}
 
-  @OnMessageEvent(UserEvent)
+  @OnMessageEvent(UserEvent, { exact: false })
   async handleAllUser(payload: UserEvent) {
     console.log('handleAllUser', payload);
   }
