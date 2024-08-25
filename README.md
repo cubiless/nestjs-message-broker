@@ -11,7 +11,7 @@ $ npm i @cubiles/nestjs-message-broker
 | Support       | Message-Broker | Docker-Image                                |
 |---------------|----------------|---------------------------------------------|
 | ✅ Supported   | RabbitMQ       | `heidiks/rabbitmq-delayed-message-exchange` |
-| ✴️ In Process | EventEmitter2  |                                             |
+| ✴️ In Process | Redis          |                                             |
 
 ## Features
 
