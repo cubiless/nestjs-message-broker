@@ -3,12 +3,12 @@ import { MESSAGE_EVENT_METADATA } from '../Constants';
 import { MessageBrokerEmitOption } from '../interfaces/MessageBrokerEmitOption.interface';
 
 export interface MessageEventMetadata {
-  route: string;
+  route: string | Array<string>;
   options: MessageBrokerEmitOption;
 }
 
 export const MessageEvent = (
-  route: string,
+  route: string | Array<string>,
   options: MessageBrokerEmitOption = {},
 ): ClassDecorator => {
   return (constructor: Function) => {

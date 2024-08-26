@@ -125,7 +125,7 @@ export abstract class MessageBroker<BrokerOption> {
       );
     }
 
-    return metadatas.map((v) => v.route).join(this.options.delimiter);
+    return metadatas.flatMap((v) => v.route).join(this.options.delimiter);
   }
 
   protected abstract initListener(
@@ -157,7 +157,11 @@ export abstract class MessageBroker<BrokerOption> {
     const encodeMessage = this.options.serializer.serializer(message);
 
     return this.emitMessageEvent(
-      NameUtils.toKebabCase(eventMetadata.route),
+      NameUtils.toKebabCase(
+        Array.isArray(eventMetadata.route)
+          ? this.concatRoute(...eventMetadata.route)
+          : eventMetadata.route,
+      ),
       encodeMessage,
       eventMetadata.options,
     );
@@ -215,8 +219,14 @@ export abstract class MessageBroker<BrokerOption> {
   }
 
   protected buildNameTag(...names: string[]) {
-    return [this.options.name, this.options.namespace, ...names]
-      .filter((v) => !!v)
-      .join(this.options.nameDelimiter);
+    return this.concatRoute(
+      this.options.name,
+      this.options.namespace,
+      ...names,
+    );
+  }
+
+  protected concatRoute(...names: string[]) {
+    return names.filter((v) => !!v).join(this.options.nameDelimiter);
   }
 }
