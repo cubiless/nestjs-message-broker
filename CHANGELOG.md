@@ -1,3 +1,17 @@
+## **1.1.1**&emsp;<sub><sup>2024-08-29 ([81cb034...41e2547](https://github.com/cubiless/nestjs-message-broker/compare/81cb03431fc1cc65b2f65b171d17617c2675470f...41e2547f8ddc5a7cc3195ef837e865e867f37f8f?diff=split))</sup></sub>
+
+### Features
+
+##### &ensp;`@MessageEvent`
+
+- Add multi routes ([81cb034](https://github.com/cubiless/nestjs-message-broker/commit/81cb03431fc1cc65b2f65b171d17617c2675470f))
+
+### ? ? ?
+
+- doc\(\): Add description at package\.json ([b24bf48](https://github.com/cubiless/nestjs-message-broker/commit/b24bf48cad545a732ad9e9a0575dee431cd39fd9))
+
+<br>
+
 ## **1.1.0**&emsp;<sub><sup>2024-08-25 ([1a6b846...0f0cbc9](https://github.com/cubiless/nestjs-message-broker/compare/1a6b8469214aa217c1b21554c5be7affa02b2808...0f0cbc9ae2a2674a744d3fcef192ddfe3129c7bb?diff=split))</sup></sub>
 
 ### ? ? ?
