@@ -1,3 +1,11 @@
+## **1.1.5**&emsp;<sub><sup>2024-09-21 ([c5ab23b...9e0f718](https://github.com/cubiless/nestjs-message-broker/compare/c5ab23bcec6ac30998b7c391cbb771ee107ab800...9e0f718b5329f3adc42eba5f1dd89422c5008bc9?diff=split))</sup></sub>
+
+### ? ? ?
+
+- fix\(\): Add optional option of emit event ([c5ab23b](https://github.com/cubiless/nestjs-message-broker/commit/c5ab23bcec6ac30998b7c391cbb771ee107ab800))
+
+<br>
+
 ## **1.1.4**&emsp;<sub><sup>2024-09-21 ([f19c4cb...6f97f44](https://github.com/cubiless/nestjs-message-broker/compare/f19c4cb66d5fb804d7e90d50fec4fe6c81b5f5b6...6f97f44b521175f93e31f588631060b3bc84f0a4?diff=split))</sup></sub>
 
 ### ? ? ?
