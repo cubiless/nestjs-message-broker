@@ -24,7 +24,6 @@ export abstract class MessageBroker<BrokerOption> {
     private messageEventMetadataAccessor: MessageEventMetadataAccessor,
   ) {
     this.options = {
-      global: false,
       serializer: MessageBrokerSerializer.json(),
       retryStrategy: MessageBrokerRetryStrategy.cube(),
       defaultScope: 'default',
