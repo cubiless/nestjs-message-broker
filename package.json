@@ -2,7 +2,7 @@
   "name": "@cubiles/nestjs-message-broker",
   "description": "The idea behind this module is to connect it to a message broker that enables the permanent distribution of messages.",
   "private": false,
-  "version": "1.1.1",
+  "version": "1.1.2",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "license": "MIT",
