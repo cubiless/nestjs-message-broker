@@ -137,19 +137,19 @@ export abstract class MessageBroker<BrokerOption> {
   async emit(
     event: string,
     payload: IMessageEvent,
-    options: MessageBrokerEmitOption,
+    options?: MessageBrokerEmitOption,
   ): Promise<boolean>;
   async emit(
     event: IMessageEvent,
-    options: MessageBrokerEmitOption,
+    options?: MessageBrokerEmitOption,
   ): Promise<boolean>;
   async emit(
     event: string | IMessageEvent,
-    payload: IMessageEvent | MessageBrokerEmitOption,
+    payload?: IMessageEvent | MessageBrokerEmitOption,
     options?: MessageBrokerEmitOption,
   ): Promise<boolean> {
     const message: IMessageEvent = typeof event === 'string' ? payload : event;
-    const emitOption: MessageBrokerEmitOption =
+    const emitOption: MessageBrokerEmitOption | undefined =
       typeof event === 'string' ? options : payload;
 
     const eventMetadata = this.extractMessageEventMetaData(event, emitOption);
