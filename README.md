@@ -27,7 +27,7 @@ $ npm i @cubiles/nestjs-message-broker
 ```ts
 @Module({
   imports: [
-    MessageBrokerModule.register(RabbitMQBroker, {
+    MessageBrokerModule.forRoot(RabbitMQBroker, {
       broker: {
         password: 'guest',
         user: 'guest',

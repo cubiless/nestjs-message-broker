@@ -5,13 +5,6 @@ import {
 
 export interface MessageBrokerOptions<T> {
   /**
-   * Is the module global?
-   *
-   * Default false
-   */
-  global?: boolean;
-
-  /**
    * Custom serializer methode of string to buffer
    *
    * Default JSON.parse() and JSON.stringify()

@@ -4,7 +4,7 @@ import { AppService } from './App.service';
 
 @Module({
   imports: [
-    MessageBrokerModule.register(RabbitMQBroker, {
+    MessageBrokerModule.forRoot(RabbitMQBroker, {
       broker: {
         password: 'guest',
         user: 'guest',

@@ -10,12 +10,12 @@ import { MESSAGE_BROKER, MESSAGE_BROKER_OPTIONS } from './Constants';
 import { ConfigurableModuleAsyncOptions } from '@nestjs/common/module-utils/interfaces/configurable-module-async-options.interface';
 
 export class MessageBrokerModule {
-  static register<T>(
+  static forRoot<T>(
     broker: Type<MessageBroker<T>>,
     options: MessageBrokerOptions<T>,
   ): DynamicModule {
     return {
-      global: options.global,
+      global: true,
       module: MessageBrokerModule,
       imports: [DiscoveryModule],
       providers: [
@@ -31,7 +31,7 @@ export class MessageBrokerModule {
     };
   }
 
-  static registerAsync<T>(
+  static forRootAsync<T>(
     broker: Type<MessageBroker<T>>,
     options: ConfigurableModuleAsyncOptions<MessageBrokerOptions<T>>,
   ): DynamicModule {
@@ -51,6 +51,7 @@ export class MessageBrokerModule {
         },
       ],
       exports: [{ provide: MESSAGE_BROKER, useClass: broker }],
+      global: true,
     };
   }
 }
