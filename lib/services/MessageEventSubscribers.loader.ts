@@ -39,7 +39,10 @@ export class MessageEventSubscribersLoader
     const controllers = this.discoveryService.getControllers();
 
     const filtered: InstanceWrapper[] = [...providers, ...controllers].filter(
-      (wrapper) => wrapper.instance && !wrapper.isAlias,
+      (wrapper) =>
+        wrapper.instance &&
+        typeof wrapper.instance === 'object' &&
+        !wrapper.isAlias,
     );
 
     for (const wrapper of filtered) {
