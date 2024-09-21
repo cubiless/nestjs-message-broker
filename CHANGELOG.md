@@ -1,3 +1,12 @@
+## **1.1.2**&emsp;<sub><sup>2024-09-21 ([b7e4ac3...ffdfb40](https://github.com/cubiless/nestjs-message-broker/compare/b7e4ac38b53bfedb563b92cca90bd459b44846e2...ffdfb4038b5def4acfe16280875f613823594897?diff=split))</sup></sub>
+
+### ? ? ?
+
+- fix\(\): Check type of wrapper ([b7e4ac3](https://github.com/cubiless/nestjs-message-broker/commit/b7e4ac38b53bfedb563b92cca90bd459b44846e2))
+- feat\(\): Set module global ([6d89ade](https://github.com/cubiless/nestjs-message-broker/commit/6d89ade32e0b36df27be6c9c6dedd238cd7e7b25))
+
+<br>
+
 ## **1.1.1**&emsp;<sub><sup>2024-08-29 ([81cb034...41e2547](https://github.com/cubiless/nestjs-message-broker/compare/81cb03431fc1cc65b2f65b171d17617c2675470f...41e2547f8ddc5a7cc3195ef837e865e867f37f8f?diff=split))</sup></sub>
 
 ### Features
