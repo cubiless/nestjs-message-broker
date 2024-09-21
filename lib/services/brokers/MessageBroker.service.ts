@@ -155,12 +155,17 @@ export abstract class MessageBroker<BrokerOption> {
     const eventMetadata = this.extractMessageEventMetaData(event, emitOption);
     const encodeMessage = this.options.serializer.serializer(message);
 
+    const flattedRoute: string = Array.isArray(eventMetadata.route)
+      ? this.concatRoute(...eventMetadata.route)
+      : eventMetadata.route;
+
+    const scopedRoute = this.concatRoute(
+      eventMetadata.options.scope ?? this.options.defaultScope,
+      flattedRoute,
+    );
+
     return this.emitMessageEvent(
-      NameUtils.toKebabCase(
-        Array.isArray(eventMetadata.route)
-          ? this.concatRoute(...eventMetadata.route)
-          : eventMetadata.route,
-      ),
+      NameUtils.toKebabCase(scopedRoute),
       encodeMessage,
       eventMetadata.options,
     );
