@@ -1,3 +1,11 @@
+## **1.1.3**&emsp;<sub><sup>2024-09-21 ([6571c4d...101ef26](https://github.com/cubiless/nestjs-message-broker/compare/6571c4d9fdb3c2d8a0b42de3f3af6e6d2e154bc7...101ef26510b7d37f96704e14260ef168edd9e6e4?diff=split))</sup></sub>
+
+### ? ? ?
+
+- fix\(\): Default settings of MessageBroker ([6571c4d](https://github.com/cubiless/nestjs-message-broker/commit/6571c4d9fdb3c2d8a0b42de3f3af6e6d2e154bc7))
+
+<br>
+
 ## **1.1.2**&emsp;<sub><sup>2024-09-21 ([b7e4ac3...ffdfb40](https://github.com/cubiless/nestjs-message-broker/compare/b7e4ac38b53bfedb563b92cca90bd459b44846e2...ffdfb4038b5def4acfe16280875f613823594897?diff=split))</sup></sub>
 
 ### ? ? ?
