@@ -1,3 +1,11 @@
+## **1.1.6**&emsp;<sub><sup>2024-09-29 ([f5a9cde...bcd7cb2](https://github.com/cubiless/nestjs-message-broker/compare/f5a9cde1d838b3df95a23be3810889eb4390d84b...bcd7cb2968efdb1dcfe50f6ff33a3b97e43e12c3?diff=split))</sup></sub>
+
+### ? ? ?
+
+- feat\(\): Add debug for logs ([f5a9cde](https://github.com/cubiless/nestjs-message-broker/commit/f5a9cde1d838b3df95a23be3810889eb4390d84b))
+
+<br>
+
 ## **1.1.5**&emsp;<sub><sup>2024-09-21 ([c5ab23b...9e0f718](https://github.com/cubiless/nestjs-message-broker/compare/c5ab23bcec6ac30998b7c391cbb771ee107ab800...9e0f718b5329f3adc42eba5f1dd89422c5008bc9?diff=split))</sup></sub>
 
 ### ? ? ?
