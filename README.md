@@ -11,7 +11,6 @@ $ npm i @cubiles/nestjs-message-broker
 | Support       | Message-Broker | Docker-Image                                |
 |---------------|----------------|---------------------------------------------|
 | ✅ Supported   | RabbitMQ       | `heidiks/rabbitmq-delayed-message-exchange` |
-| ✴️ In Process | Redis          |                                             |
 
 ## Features
 
@@ -38,7 +37,8 @@ $ npm i @cubiles/nestjs-message-broker
       namespace: 'user-service',
       delimiter: '.',
       wildcards: '*',
-      multiLevelWildcards: '#',
+      multiLevelWildcards: '#', 
+      debug: true
     }),
   ],
   providers: [AppService],
@@ -237,5 +237,12 @@ export interface MessageBrokerOptions<T> {
    * Namespace of queue and exchanges
    */
   namespace?: string | null;
+
+   /**
+    * Enable logs of handle events
+    *
+    * Default false
+    */
+   debug?: boolean;
 }
 ````

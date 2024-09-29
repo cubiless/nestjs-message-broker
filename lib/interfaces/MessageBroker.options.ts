@@ -67,4 +67,9 @@ export interface MessageBrokerOptions<T> {
    * Default **
    */
   multiLevelWildcards?: string;
+
+  /**
+   * Logging
+   */
+  debug?: boolean;
 }

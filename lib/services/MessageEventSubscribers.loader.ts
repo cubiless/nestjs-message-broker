@@ -74,9 +74,7 @@ export class MessageEventSubscribersLoader
         messageMetadata.options.queue = [name, methodKey];
       }
 
-      if (!messageMetadata.options?.exact) {
-        messageMetadata.options.exact = true;
-      }
+      messageMetadata.options.exact = messageMetadata.options?.exact ?? true;
 
       try {
         await this.messageBroker.bind(

@@ -14,6 +14,7 @@ import { AppService } from './App.service';
       namespace: 'user-service',
       name: 'my-broker',
       multiLevelWildcards: '#',
+      debug: true,
     }),
   ],
   providers: [AppService],

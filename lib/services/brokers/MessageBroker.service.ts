@@ -32,6 +32,7 @@ export abstract class MessageBroker<BrokerOption> {
       nameDelimiter: '.',
       wildcards: '*',
       multiLevelWildcards: '**',
+      debug: false,
       ...messageBrokerOptions,
     };
   }
@@ -101,6 +102,12 @@ export abstract class MessageBroker<BrokerOption> {
 
         // If declare a class then create an instance
         const message = classType ? plainToInstance(classType, decode) : decode;
+
+        if (this.options.debug) {
+          this.logger.log(
+            `${nameTag}(${normalizePattern.join('|')}) Message: ${JSON.stringify(message)} Retry: ${retry}`,
+          );
+        }
 
         // Consume messages
         await onMessage(message, metadata.options, retry);
