@@ -123,7 +123,8 @@ export class RabbitMQBroker extends MessageBroker<RabbitMQBrokerOptions> {
           );
 
           this.chancel.ack(msg);
-        } catch (e) {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (error) {
           this.chancel.nack(msg, false, false);
         }
       },
@@ -171,7 +172,8 @@ export class RabbitMQBroker extends MessageBroker<RabbitMQBrokerOptions> {
             msg.properties?.headers['x-retries'] || 0,
           );
           this.chancel.ack(msg);
-        } catch (e) {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (error) {
           this.chancel.nack(msg, false, false);
         }
       },

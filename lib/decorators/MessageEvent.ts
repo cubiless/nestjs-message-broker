@@ -11,6 +11,7 @@ export const MessageEvent = (
   route: string | Array<string>,
   options: MessageBrokerEmitOption = {},
 ): ClassDecorator => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
   return (constructor: Function) => {
     extendArrayMetadata(
       MESSAGE_EVENT_METADATA,

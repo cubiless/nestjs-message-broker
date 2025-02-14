@@ -26,8 +26,8 @@
     "prepublishOnly": "npm run build",
     "start:dev": "nest start -p tsconfig.json --watch",
     "test:e2e": "jest --config ./tests/jest-e2e.json --verbose",
-    "format": "prettier --write \"{lib,tests}/**/*.ts\"",
-    "lint": "eslint 'lib/**/*.ts' --fix",
+    "lint": "eslint \"{lib,test}/**/*.ts\" --fix",
+    "format": "prettier --write \"{lib,test}/**/*.ts\"",
     "release": "release-it"
   },
   "dependencies": {
@@ -36,6 +36,7 @@
     "class-transformer": "^0.5.1"
   },
   "devDependencies": {
+    "@eslint/js": "^9.20.0",
     "@nestjs/common": "11.0.9",
     "@nestjs/core": "11.0.9",
     "@nestjs/platform-express": "11.0.9",
@@ -43,19 +44,17 @@
     "@types/amqplib": "^0.10.6",
     "@types/jest": "29.5.14",
     "@types/node": "22.13.4",
-    "@typescript-eslint/eslint-plugin": "8.24.0",
-    "@typescript-eslint/parser": "8.24.0",
-    "eslint": "9.20.1",
-    "eslint-config-prettier": "10.0.1",
-    "eslint-plugin-import": "2.31.0",
-    "jest": "29.7.0",
+    "eslint": "^9.20.1",
     "prettier": "3.5.1",
+    "globals": "^15.15.0",
+    "jest": "29.7.0",
     "reflect-metadata": "0.2.2",
     "release-it": "^18.1.2",
     "rimraf": "6.0.1",
     "rxjs": "7.8.1",
     "ts-jest": "29.2.5",
-    "typescript": "5.7.3"
+    "typescript": "5.7.3",
+    "typescript-eslint": "^8.24.0"
   },
   "peerDependencies": {
     "@nestjs/common": "^8.0.0 || ^9.0.0 || ^10.0.0 || ^11.0.0",

@@ -1,1 +1,1 @@
-export interface IMessageEvent {}
+export type IMessageEvent = object;

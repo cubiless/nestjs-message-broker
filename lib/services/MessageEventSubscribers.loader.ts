@@ -3,6 +3,7 @@ import {
   Logger,
   OnApplicationBootstrap,
   OnApplicationShutdown,
+  Type,
 } from '@nestjs/common';
 import { DiscoveryService, MetadataScanner } from '@nestjs/core';
 import { InstanceWrapper } from '@nestjs/core/injector/instance-wrapper';
@@ -22,7 +23,7 @@ export class MessageEventSubscribersLoader
     private readonly metadataScanner: MetadataScanner,
     private readonly messageMetadataAccessor: MessageEventMetadataAccessor,
     @InjectMessageBroker()
-    private readonly messageBroker: MessageBroker<any>,
+    private readonly messageBroker: MessageBroker<unknown>,
   ) {}
 
   async onApplicationBootstrap() {
@@ -58,7 +59,7 @@ export class MessageEventSubscribersLoader
 
   private async subscribeToEventIfListener(
     name: string,
-    instance: Record<string, any>,
+    instance: Record<string, Type<unknown>>,
     methodKey: string,
   ) {
     const messageMetadatas: OnMessageEventMetadata[] =

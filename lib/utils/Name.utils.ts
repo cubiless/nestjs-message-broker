@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace NameUtils {
   export function toCamelCase(str: string): string {
     return str.replace(/-./g, (m) => m.toUpperCase()[1]);

@@ -6,8 +6,9 @@ export interface MessageBrokerSerializer {
   serializer(value: IMessageEvent): Buffer;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace MessageBrokerSerializer {
-  export function json() {
+  export function json(): MessageBrokerSerializer {
     return {
       deserializer: (message: Buffer) => JSON.parse(message.toString()),
       serializer: (value: IMessageEvent) => Buffer.from(JSON.stringify(value)),

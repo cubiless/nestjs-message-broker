@@ -4,6 +4,7 @@ export type IMessageBrokerRetryStrategy = (retries: number) => number;
  * Default message broker retries strategy
  * Each function calculates the delay of new retries
  */
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace MessageBrokerRetryStrategy {
   /**
    * Constant delay of each retries

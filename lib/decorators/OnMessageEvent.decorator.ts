@@ -12,7 +12,11 @@ export const OnMessageEvent = (
   event: string | Array<string> | Type<IMessageEvent>,
   options: OnMessageEventOptions = {},
 ): MethodDecorator => {
-  const decoratorFactory = (target: object, key?: any, descriptor?: any) => {
+  const decoratorFactory = (
+    target: object,
+    key?: string,
+    descriptor?: PropertyDescriptor,
+  ) => {
     extendArrayMetadata(
       MESSAGE_EVENT_LISTENER_METADATA,
       [
