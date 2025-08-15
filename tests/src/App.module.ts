@@ -6,10 +6,12 @@ import { AppService } from './App.service';
   imports: [
     MessageBrokerModule.forRoot(RabbitMQBroker, {
       broker: {
-        password: 'guest',
-        user: 'guest',
-        host: 'localhost',
-        port: 5672,
+        url: {
+          password: 'guest',
+          username: 'guest',
+          hostname: 'localhost',
+          port: 5672,
+        },
       },
       namespace: 'user-service',
       name: 'my-broker',

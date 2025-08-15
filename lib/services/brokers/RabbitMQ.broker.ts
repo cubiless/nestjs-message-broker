@@ -1,23 +1,20 @@
 import { OnMessageEventOptions } from '../../interfaces';
 import { Injectable } from '@nestjs/common';
 import * as amqpConnectionManager from 'amqp-connection-manager';
-import { ChannelWrapper } from 'amqp-connection-manager';
+import { ChannelWrapper, ConnectionUrl } from 'amqp-connection-manager';
 import { IAmqpConnectionManager } from 'amqp-connection-manager/dist/types/AmqpConnectionManager';
 import type * as amqplib from 'amqplib';
 import { MessageBroker } from './MessageBroker.service';
 import { MessageBrokerEmitOption } from '../../interfaces/MessageBrokerEmitOption.interface';
 
-export interface RabbitMQBrokerOptions {
-  user: string;
-  password: string;
-  host: string;
-  port: number;
+export type RabbitMQBrokerOptions = {
+  url: ConnectionUrl;
 
   /**
    * Default prefetch of a queue
    */
   prefetch?: number;
-}
+};
 
 @Injectable()
 export class RabbitMQBroker extends MessageBroker<RabbitMQBrokerOptions> {
@@ -29,13 +26,8 @@ export class RabbitMQBroker extends MessageBroker<RabbitMQBrokerOptions> {
 
   private retriesQueue: amqplib.Replies.AssertQueue | null = null;
 
-  get amqpUrl() {
-    const { user, password, host, port } = this.options.broker;
-    return `amqp://${user}:${password}@${host}:${port}`;
-  }
-
   async connect(): Promise<void> {
-    this.connection = amqpConnectionManager.connect(this.amqpUrl);
+    this.connection = amqpConnectionManager.connect(this.options.broker.url);
     this.chancel = this.connection.createChannel();
     await this.chancel.waitForConnect();
 

@@ -28,10 +28,12 @@ $ npm i @cubiles/nestjs-message-broker
   imports: [
     MessageBrokerModule.forRoot(RabbitMQBroker, {
       broker: {
-        password: 'guest',
-        user: 'guest',
-        host: 'localhost',
-        port: 5672,
+        url: {
+          password: 'guest',
+          username: 'guest',
+          hostname: 'localhost',
+          port: 5672,
+        }
       },
       name: 'my-broker',
       namespace: 'user-service',
