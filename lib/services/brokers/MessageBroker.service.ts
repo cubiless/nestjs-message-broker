@@ -10,12 +10,12 @@ import { MessageBrokerRetryStrategy } from '../MessageBroker.retry-strategy';
 import { MessageBrokerEmitOption } from '../../interfaces/MessageBrokerEmitOption.interface';
 import { MessageBrokerSerializer } from '../MessageBroker.serializer';
 import { MessageEventMetadataAccessor } from '../MessageEventMetadata.accessor';
-import { MessageEventMetadata } from '../../decorators/MessageEvent';
+import { MessageEventMetadata } from '../../decorators';
 import { plainToInstance } from 'class-transformer';
 import { NameUtils } from '../../utils/Name.utils';
 
 export abstract class MessageBroker<BrokerOption> {
-  private readonly logger = new Logger('MessageBroker');
+  protected readonly logger = new Logger('MessageBroker');
   protected readonly options: Required<MessageBrokerOptions<BrokerOption>>;
 
   constructor(
@@ -33,6 +33,7 @@ export abstract class MessageBroker<BrokerOption> {
       wildcards: '*',
       multiLevelWildcards: '**',
       debug: false,
+      autoCleanUp: true,
       ...messageBrokerOptions,
     };
   }
@@ -116,6 +117,14 @@ export abstract class MessageBroker<BrokerOption> {
 
     this.logger.log(`${nameTag}(${normalizePattern.join('|')}) initialized`);
   }
+
+  async initialized(): Promise<void> {
+    if (this.options.autoCleanUp) {
+      await this.cleanUp();
+    }
+  }
+
+  async cleanUp(): Promise<void> {}
 
   protected extractEventPattern(event: string | Type<IMessageEvent>): string {
     if (typeof event === 'string') {

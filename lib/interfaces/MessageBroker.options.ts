@@ -69,6 +69,11 @@ export interface MessageBrokerOptions<T> {
   multiLevelWildcards?: string;
 
   /**
+   * Remove all undeclared queues of the namespaces.
+   */
+  autoCleanUp?: boolean;
+
+  /**
    * Logging
    */
   debug?: boolean;

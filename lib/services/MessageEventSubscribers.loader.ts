@@ -55,6 +55,8 @@ export class MessageEventSubscribersLoader
         await this.subscribeToEventIfListener(name, instance, methodKey);
       }
     }
+
+    await this.messageBroker.initialized();
   }
 
   private async subscribeToEventIfListener(
