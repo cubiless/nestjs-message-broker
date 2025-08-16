@@ -67,7 +67,7 @@ export class RabbitMQBroker
 
   private async initMessageExchange() {
     this.messageExchange = await this.chancel.assertExchange(
-      this.buildNameTag('messages'),
+      this.buildNameTag(['messages']),
       'x-delayed-message',
       {
         durable: true,
@@ -80,7 +80,7 @@ export class RabbitMQBroker
 
   private async initRetriesExchange() {
     this.retriesExchange = await this.chancel.assertExchange(
-      this.buildNameTag('retries'),
+      this.buildNameTag(['retries']),
       'fanout',
       {
         durable: true,
@@ -90,7 +90,7 @@ export class RabbitMQBroker
 
   private async initRetriesQueue() {
     this.retriesQueue = await this.chancel.assertQueue(
-      this.buildNameTag('retries'),
+      this.buildNameTag(['retries']),
       {
         durable: true,
       },
@@ -151,7 +151,9 @@ export class RabbitMQBroker
     onMessage: (buffer: Buffer, retry: number) => Promise<void>,
   ): Promise<void> {
     const queue = await this.chancel.assertQueue(nameTag, {
-      durable: true,
+      durable: typeof options.volatile === 'boolean' ? !options.volatile : true,
+      autoDelete:
+        typeof options.volatile === 'boolean' ? options.volatile : false,
       deadLetterExchange: this.retriesExchange.exchange,
       deadLetterRoutingKey: this.buildRabbitmqRoutingKey('retry', nameTag),
     });

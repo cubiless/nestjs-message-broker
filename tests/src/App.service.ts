@@ -21,11 +21,9 @@ export class AppService {
     await this.emitByEvent(payload);
   }
 
-  async emitByPayload(user: any) {
-    return this.messageBroker.emit('user.created', user, {
-      priority: 10,
-      delay: 10000,
-    });
+  @OnMessageEvent(UserCreatedEvent, { volatile: true })
+  async handleCreatedUserPerInstance(payload: UserCreatedEvent) {
+    console.log('handleAllUserPerInstance', payload);
   }
 
   async emitByEvent(createdEvent: UserCreatedEvent) {

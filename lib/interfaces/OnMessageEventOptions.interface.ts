@@ -41,4 +41,11 @@ export interface OnMessageEventOptions {
    * Default true
    */
   exact?: boolean;
+
+  /**
+   * Each instance receives the event separately and only during the current runtime.
+   *
+   * Default: false
+   */
+  volatile?: boolean;
 }

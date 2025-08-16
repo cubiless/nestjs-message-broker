@@ -8,22 +8,25 @@
 $ npm i @cubiles/nestjs-message-broker
 ```
 
-| Support       | Message-Broker | Docker-Image                                |
-|---------------|----------------|---------------------------------------------|
-| ✅ Supported   | RabbitMQ       | `heidiks/rabbitmq-delayed-message-exchange` |
+| Support     | Message-Broker | Docker-Image                                |
+|-------------|----------------|---------------------------------------------|
+| ✅ Supported | RabbitMQ       | `heidiks/rabbitmq-delayed-message-exchange` |
 
 ## Features
 
 - ✅ simple Usage without much configuration
 - ✅ support the native routing pattern
 - ✅ auto-retry of messages with a lot of strategies
-- ✅ group messages in Namespaces and Scopes
+- ✅ group messages in namespaces and scopes
+- ✅ auto clean up of no usage queues
+- ✅ Optional: Emits event separately for each instance
 
 ## Example
 
 ### Code
 
 ```ts
+
 @Module({
   imports: [
     MessageBrokerModule.forRoot(RabbitMQBroker, {
@@ -39,7 +42,7 @@ $ npm i @cubiles/nestjs-message-broker
       namespace: 'user-service',
       delimiter: '.',
       wildcards: '*',
-      multiLevelWildcards: '#', 
+      multiLevelWildcards: '#',
       debug: true
     }),
   ],
@@ -51,6 +54,7 @@ export class AppModule {
 ```
 
 ```ts
+
 @MessageEvent('user')
 export class UserEvent implements IMessageEvent {
   userId: string;
@@ -62,12 +66,14 @@ export class UserEvent implements IMessageEvent {
 ```
 
 ```ts
+
 @MessageEvent('created')
 export class UserCreatedEvent extends UserEvent {
 }
 ```
 
 ```ts
+
 @Injectable()
 export class AppService {
   constructor(
@@ -84,6 +90,11 @@ export class AppService {
   @OnMessageEvent('user.created')
   async handleCreatedUser(user) {
     console.log('New user', user);
+  }
+
+  @OnMessageEvent(UserCreatedEvent, { volatile: true })
+  async handleCreatedUserPerInstance(payload: UserCreatedEvent) {
+    console.log('handleAllUserPerInstance', payload);
   }
 
   async sendMessages() {
@@ -240,11 +251,11 @@ export interface MessageBrokerOptions<T> {
    */
   namespace?: string | null;
 
-   /**
-    * Enable logs of handle events
-    *
-    * Default false
-    */
-   debug?: boolean;
+  /**
+   * Enable logs of handle events
+   *
+   * Default false
+   */
+  debug?: boolean;
 }
 ````

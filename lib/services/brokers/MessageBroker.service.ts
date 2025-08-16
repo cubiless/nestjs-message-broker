@@ -1,4 +1,4 @@
-import { OnMessageEventMetadata } from '../../decorators';
+import { MessageEventMetadata, OnMessageEventMetadata } from '../../decorators';
 import {
   IMessageEvent,
   MessageBrokerOptions,
@@ -10,7 +10,6 @@ import { MessageBrokerRetryStrategy } from '../MessageBroker.retry-strategy';
 import { MessageBrokerEmitOption } from '../../interfaces/MessageBrokerEmitOption.interface';
 import { MessageBrokerSerializer } from '../MessageBroker.serializer';
 import { MessageEventMetadataAccessor } from '../MessageEventMetadata.accessor';
-import { MessageEventMetadata } from '../../decorators';
 import { plainToInstance } from 'class-transformer';
 import { NameUtils } from '../../utils/Name.utils';
 
@@ -52,9 +51,11 @@ export abstract class MessageBroker<BrokerOption> {
   ): Promise<void> {
     const nameTag = this.buildNameTag(
       Array.isArray(metadata.options.queue)
-        ? metadata.options.queue.join(this.options.nameDelimiter)
-        : metadata.options.queue,
+        ? metadata.options.queue
+        : [metadata.options.queue],
+      !!metadata.options.volatile,
     );
+
     const scopes = [this.options.defaultScope];
 
     // Init additional scopes
@@ -238,12 +239,11 @@ export abstract class MessageBroker<BrokerOption> {
     return this.options.retryStrategy(retry);
   }
 
-  protected buildNameTag(...names: string[]) {
-    return this.concatRoute(
-      this.options.name,
-      this.options.namespace,
-      ...names,
-    );
+  protected buildNameTag(patter: string[] = [], volatile: boolean = false) {
+    const tags = [this.options.name, this.options.namespace, ...patter];
+    if (volatile) tags.push(crypto.randomUUID());
+
+    return tags.filter((v) => !!v).join('.');
   }
 
   protected concatRoute(...names: string[]) {
