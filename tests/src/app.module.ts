@@ -1,22 +1,22 @@
 import { Module } from '@nestjs/common';
-import { MessageBrokerModule, RabbitMQBroker } from '../../lib';
+import { MessageBrokerModule, RabbitMqAdapter } from '../../lib';
 import { AppService } from './App.service';
 
 @Module({
   imports: [
-    MessageBrokerModule.forRoot(RabbitMQBroker, {
-      broker: {
+    MessageBrokerModule.forRoot({
+      adapter: new RabbitMqAdapter({
+        namespace: 'test',
         url: {
           password: 'guest',
           username: 'guest',
           hostname: 'localhost',
           port: 5672,
         },
+      }),
+      default: {
+        source: 'com',
       },
-      namespace: 'user-service',
-      name: 'my-broker',
-      multiLevelWildcards: '#',
-      debug: true,
     }),
   ],
   providers: [AppService],

@@ -1,3 +1,2 @@
-export * from './OnMessageEvent.decorator';
-export * from './InjectMessageBroker';
-export * from './MessageEvent';
+export * from './cloud-event-definition.decorator';
+export * from './on-cloud-event.decorator';
