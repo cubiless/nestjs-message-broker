@@ -33,7 +33,6 @@
   "dependencies": {
     "amqp-connection-manager": "^4.1.14",
     "amqplib": "^0.10.5",
-    "class-transformer": "^0.5.1",
     "cloudevents": "^10.0.0"
   },
   "devDependencies": {
