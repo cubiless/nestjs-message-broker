@@ -2,7 +2,7 @@ import {
   IMessageBrokerAdapter,
   IMessageBrokerPublishOptions,
   IMessageBrokerSubscribeOptions,
-} from '../interfaces/message-broker-adapter.interface';
+} from '../interfaces';
 import * as amqpConnectionManager from 'amqp-connection-manager';
 import { ChannelWrapper } from 'amqp-connection-manager';
 import { IAmqpConnectionManager } from 'amqp-connection-manager/dist/types/AmqpConnectionManager';
@@ -102,10 +102,10 @@ export class RabbitMqAdapter implements IMessageBrokerAdapter {
     );
   }
 
-  async subscribe(
+  async subscribe<T>(
     name: string,
     pattern: string,
-    handler: (event: CloudEvent) => Promise<void>,
+    handler: (event: CloudEvent<T>) => Promise<void>,
     options?: IMessageBrokerSubscribeOptions,
   ): Promise<void> {
     const { volatile, prefetch, priority }: IMessageBrokerSubscribeOptions = {

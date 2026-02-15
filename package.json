@@ -25,15 +25,17 @@
     "build": "rimraf -rf dist && tsc -p tsconfig.build.json",
     "prepublishOnly": "npm run build",
     "start:dev": "nest start -p tsconfig.json --watch",
-    "test:e2e": "jest --config ./tests/jest-e2e.json --verbose",
-    "lint": "eslint \"{lib,test}/**/*.ts\" --fix",
-    "format": "prettier --write \"{lib,test}/**/*.ts\"",
+    "test": "jest --verbose",
+    "test:watch": "jest --watch",
+    "lint": "eslint \"lib/**/*.ts\" --fix",
+    "format": "prettier --write \"lib/**/*.ts\"",
     "release": "release-it"
   },
   "dependencies": {
     "amqp-connection-manager": "^4.1.14",
     "amqplib": "^0.10.5",
-    "cloudevents": "^10.0.0"
+    "cloudevents": "^10.0.0",
+    "rxjs": "^7.8.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.20.0",
@@ -52,7 +54,6 @@
     "reflect-metadata": "0.2.2",
     "release-it": "^18.1.2",
     "rimraf": "6.0.1",
-    "rxjs": "7.8.1",
     "ts-jest": "29.2.5",
     "typescript": "5.7.3",
     "typescript-eslint": "^8.24.0"

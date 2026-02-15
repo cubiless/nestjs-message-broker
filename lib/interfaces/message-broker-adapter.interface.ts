@@ -8,10 +8,10 @@ export interface IMessageBrokerAdapter {
     event: CloudEvent<T>,
     options?: IMessageBrokerPublishOptions,
   ): Promise<boolean>;
-  subscribe(
+  subscribe<T>(
     name: string,
     pattern: string,
-    handler: (event: CloudEvent) => Promise<void>,
+    handler: (event: CloudEvent<T>) => Promise<void>,
     options?: IMessageBrokerSubscribeOptions,
   ): Promise<void>;
 }
